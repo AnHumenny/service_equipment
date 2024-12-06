@@ -3,21 +3,15 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-host = 'localhost'
-port = 3306
-user = 'admin'
-password = '1qazxcde3'
-dtb = 'str_gomel'
-
 
 class SqlEquipment:
     def __init__(self, host, port, user, password, dtb):
         self.connection = pymysql.connect(
-            host='localhost',
+            host=os.getenv('host'),
             port=3306,
-            user='admin',
-            password='1qazxcde3',
-            database='str_gomel',
+            user=os.getenv('user'),
+            password=os.getenv('password'),
+            database=os.getenv('database'),
             cursorclass=pymysql.cursors.DictCursor
         )
 
@@ -100,7 +94,7 @@ class SqlEquipment:
         except Exception as e:
             print("error: ", e)
         finally:
-            cursor.close()  
+            cursor.close()
 
     def select_equipment_result(self, equip):
         query_equip = "SELECT * FROM `replacement` WHERE equipment LIKE '%" + equip + "%'"
@@ -234,6 +228,3 @@ class SqlEquipment:
             print("error: ", e)
         finally:
             cursor.close()
-
-    def __del__(self):
-        self.connection.close()
