@@ -1,9 +1,10 @@
 import os
+from datetime import datetime
 import config
 from dotenv import load_dotenv
 load_dotenv()
 import tkinter as tk
-from tkinter import filedialog as fd
+from tkinter import filedialog as fd, messagebox
 from tkinter import *
 import base64
 import csv
@@ -33,7 +34,7 @@ class Win(tk.Tk):
         self.d_user = tk.StringVar()
         self.authent_OK = False  #отключает авторизацию
         self.superadmin_OK = False   #проверка статуса админа
-      #  self.resizable(False, False)   #изменение размера
+        self.resizable(False, False)   #изменение размера
         self.frame_menu = tk.Frame(self, width=200, height=800)
         self.frame_menu.pack(side=LEFT)
         self.frame_info_user = tk.Frame(self, width=800)
@@ -86,7 +87,6 @@ class Win(tk.Tk):
         self.button_user = tk.Button(self.frame_menu, width=15, text='Админка',
                                      command=self.select_user)
         self.button_user.grid(row=16, column=0, pady=5, padx=10, columnspan=2)
-
         if self.authent_OK is False:
             self.start()
 
@@ -252,57 +252,72 @@ class Win(tk.Tk):
         for widget in self.frame_info.winfo_children():
             widget.destroy()
         try:
+            target_directory = os.path.join(os.getcwd(), 'gomel', 'client')
+            print("Искомая директория:", target_directory)
+            if not os.path.exists(target_directory):
+                print("Директория не найдена!")
+                return
             name = fd.askopenfilename(
-                initialdir='files/Gomel/LTE',
-                title="wap LTE",
+                initialdir=target_directory,
+                title="ubiquity",
                 filetypes=(("txt", "*.txt"),)
             )
-            with open(name, 'r', encoding='utf-8') as f:
-                data = f.read()
-                label_data = tk.Text(self.frame_info, width=126, height=46)
-                label_data.insert(tk.END, f'{data}  ')
-                label_data.pack()
-            f.close()
+            if name:
+                with open(name, 'r', encoding='utf-8') as f:
+                    data = f.read()
+                    label_data = tk.Text(self.frame_info, width=126, height=46)
+                    label_data.insert(tk.END, f'{data}  ')
+                    label_data.pack()
         except Exception as e:
-            print('не выбран файл', e)
+            print('Не выбран файл', e)
             
     # отображение текстовых файлов (Dlink)
     def call_dlink_files(self):
         for widget in self.frame_info.winfo_children():
             widget.destroy()
         try:
+            target_directory = os.path.join(os.getcwd(), 'gomel', 'dlink')
+            print("Искомая директория:", target_directory)
+            if not os.path.exists(target_directory):
+                print("Директория не найдена!")
+                return
             name = fd.askopenfilename(
-                initialdir='files/Gomel/Dlink',
-                title="Dlink",
+                initialdir=target_directory,
+                title="dlink",
                 filetypes=(("txt", "*.txt"),)
             )
-            with open(name, 'r', encoding='utf-8') as f:
-                data = f.read()
-                label_data = tk.Text(self.frame_info, width=126, height=46)
-                label_data.insert(tk.END, f'{data}  ')
-                label_data.pack()
-            f.close()
+            if name:
+                with open(name, 'r', encoding='utf-8') as f:
+                    data = f.read()
+                    label_data = tk.Text(self.frame_info, width=126, height=46)
+                    label_data.insert(tk.END, f'{data}  ')
+                    label_data.pack()
         except Exception as e:
-            print('не выбран файл', e)
+            print('Не выбран файл', e)
 
     # отображение текстовых файлов (Ubiquity)
     def call_ubiquity_files(self):
         for widget in self.frame_info.winfo_children():
             widget.destroy()
         try:
+            target_directory = os.path.join(os.getcwd(), 'gomel', 'ubiquity')
+            print("Искомая директория:", target_directory)
+            if not os.path.exists(target_directory):
+                print("Директория не найдена!")
+                return
             name = fd.askopenfilename(
-                initialdir='files/Gomel/Ubiquity',
-                title="Ubiquity",
+                initialdir=target_directory,
+                title="ubiquity",
                 filetypes=(("txt", "*.txt"),)
             )
-            with open(name, 'r', encoding='utf-8') as f:
-                data = f.read()
-                label_data = tk.Text(self.frame_info, width=126, height=46)
-                label_data.insert(tk.END, f'{data}  ')
-                label_data.pack()
-            f.close()
+            if name:
+                with open(name, 'r', encoding='utf-8') as f:
+                    data = f.read()
+                    label_data = tk.Text(self.frame_info, width=126, height=46)
+                    label_data.insert(tk.END, f'{data}  ')
+                    label_data.pack()
         except Exception as e:
-            print('не выбран файл', e)
+            print('Не выбран файл', e)
             
     #Выборка по названию оборудования
     def select_equipment(self):
@@ -397,6 +412,14 @@ class Win(tk.Tk):
                 my_list.pack(side=tk.LEFT, fill=tk.BOTH)
                 scrollbar.config(command=my_list.yview)
 
+    @staticmethod
+    def validate_date(date_text):
+        try:
+            datetime.strptime(date_text, '%Y-%m-%d')
+            return True
+        except ValueError:
+            return False
+
     #добавить запись в оборудование
     def add_equipment(self):
         if self.authent_OK is False:
@@ -421,7 +444,7 @@ class Win(tk.Tk):
             add_new_date.pack(pady=5)
             text_new_problem = tk.Label(self.frame_info, width=80, text='Проблема')
             text_new_problem.pack(pady=5)
-            add_new_problem = tk.Entry(self.frame_info, width=50, textvariable=self.problem)
+            add_new_problem = tk.Entry(self.frame_info, width=80, textvariable=self.problem)
             add_new_problem.delete('0', tk.END)
             add_new_problem.pack(pady=5)
             text_new_responsible = tk.Label(self.frame_info, width=30, text='Взято-передано')
@@ -432,15 +455,18 @@ class Win(tk.Tk):
             add_but = tk.Button(self.frame_info, width=20,
                                 text='Добавить запись', command=self.add_equip)
             add_but.pack(pady=5)
+
     def add_equip(self):
         equipment = self.equipment.get()
         address = self.address.get()
         date = self.date.get()
         problem = self.problem.get()
         responsible = self.responsible.get()
+        if not self.validate_date(date) :
+            messagebox.showinfo("Ошибка", "Неверный формат даты! Используйте YYYY-MM-DD.")
+            return
         self.dtb.insert_equip(equipment, address, date, problem, responsible)
         result_add = self.dtb.res_add()
-        print(result_add)
         for widget in self.frame_info_user.winfo_children():
             widget.destroy()
         for widget in self.frame_info.winfo_children():
@@ -451,6 +477,7 @@ class Win(tk.Tk):
             my_list.pack()
         my_list_1 = tk.Label(self.frame_info, width=126, text='Добавлено!')
         my_list_1.pack()
+
     # экспорт в csv
     def csv_export(self):
         if self.authent_OK is False:
@@ -465,7 +492,6 @@ class Win(tk.Tk):
                     result = {v:k for k, v in rows.items()}
                     res = ', '.join(str(value) for value in result if value is not None)
                     csv_writer.writerow([res])
-                    print(res)
     def select_ascue(self):
         for widget in self.frame_info.winfo_children():
             widget.destroy()
@@ -512,11 +538,15 @@ class Win(tk.Tk):
                 scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
                 my_list = tk.Text(self.frame_info, width=126, height=46,
                                   wrap=WORD, yscrollcommand=scrollbar.set)
+                if len(result_without_number) < 1:
+                    my_list.insert(tk.END, f' По запросу ничего не найдено!')
+                    my_list.pack()
+                    return
                 for rows in result_without_number:
                     for key, value in rows.items():
                         my_list.insert(tk.END, f'{value:14}|')
                     my_list.insert(tk.END, '\n')
-                my_list.pack(side=tk.LEFT, fill=tk.BOTH)
+                    my_list.pack(side=tk.LEFT, fill=tk.BOTH)
                 scrollbar.config(command=my_list.yview)
 
     # поиск АСКУЭ по улице и номер дома (целевое, с полной инфой)
@@ -530,11 +560,14 @@ class Win(tk.Tk):
             street = self.shared_ascue.get()
             result_with_number = self.dtb.street_with_namber(street, home)
             my_list = tk.Text(self.frame_info, width=126, height=46, wrap=WORD)
-            for key, value in result_with_number.items():
-                my_list.insert(tk.END, f'{value} | ')
-            my_list.pack()
-            del home
-            del street
+            if result_with_number is None:
+                my_list.insert(tk.END, f' По запросу ничего не найдено!')
+                my_list.pack()
+                return
+            for _, value in result_with_number.items():
+                my_list.insert(tk.END, f'{value} \n')
+                my_list.pack()
+
     # поиск АКСУЭ по ip
     def search_ip(self):
         for widget in self.frame_info.winfo_children():
