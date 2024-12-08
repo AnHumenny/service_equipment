@@ -580,7 +580,7 @@ class Win(tk.Tk):
             my_list = tk.Text(self.frame_info, width=126, height=46, wrap=WORD)
             try:
                 for key, value in result_ip.items():
-                    my_list.insert(tk.END, f'{value} | ')
+                    my_list.insert(tk.END, f'{value} \n ')
                 my_list.pack()
             except AttributeError:
                 print('некорректные данные ip')
